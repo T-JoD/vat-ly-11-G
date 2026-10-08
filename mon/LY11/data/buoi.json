@@ -1,0 +1,22 @@
+[
+  {
+    "buoi": 0,
+    "tieu_de": "Khảo sát năng lực đầu vào",
+    "loai": "dau_vao",
+    "co_ly_thuyet": false,
+    "co_bai_tap": false,
+    "co_mo_hinh": false,
+    "bai_kiem_tra": ["LY11-B00-VAO"],
+    "the": ["LY11.NEN.01", "LY11.NEN.02"]
+  },
+  {
+    "buoi": 1,
+    "tieu_de": "Dao động điều hòa: Mô tả & Phương trình",
+    "loai": "thuong",
+    "co_ly_thuyet": true,
+    "co_bai_tap": true,
+    "co_mo_hinh": false,
+    "bai_kiem_tra": ["LY11-B01-DAU", "LY11-B01-CUOI"],
+    "the": ["LY11.DD.01", "LY11.DD.02"]
+  }
+]

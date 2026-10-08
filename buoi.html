@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nội Dung Buổi Học</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="index.html" style="text-decoration: none; color: var(--primary); font-size: 0.9rem;">← Quay lại danh sách môn</a>
+      <h1 id="session-title" style="margin-top: 8px;">Buổi 1: Dao động điều hòa</h1>
+      <div id="session-tags" style="margin-top: 6px;"></div>
+    </header>
+
+    <div class="card" id="theory-content">
+      <h2>Lý thuyết trọng tâm</h2>
+      <div id="content-body" style="margin-top: 12px;">
+        <p>Đang tải nội dung bài học...</p>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin: 24px 0;">
+      <a id="quiz-btn" href="lam-de.html?mon=LY11&bai=LY11-B01-CUOI" class="btn" style="font-size: 1.1rem; padding: 12px 24px;">Làm bài kiểm tra cuối buổi</a>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const mon = params.get('mon') || 'LY11';
+    const buoi = params.get('buoi') || '1';
+
+    // Mock fetch for demonstration
+    document.getElementById('session-title').innerText = `Môn ${mon} - Buổi ${buoi}: Dao động điều hòa`;
+    document.getElementById('session-tags').innerHTML = `<span class="badge">LY11.DD.01</span> <span class="badge">LY11.DD.02</span>`;
+    document.getElementById('content-body').innerHTML = `
+      <p><b>1. Định nghĩa dao động:</b> Chuyển động lặp đi lặp lại quanh một vị trí cân bằng gọi là dao động cơ học.</p>
+      <p style="margin-top: 8px;"><b>2. Phương trình dao động điều hòa:</b> $x = A \\cos(\\omega t + \\varphi)$</p>
+      <ul>
+        <li>$x$: Li độ (cm hoặc m)</li>
+        <li>$A$: Biên độ dao động ($A > 0$)</li>
+        <li>$\\omega$: Tần số góc (rad/s)</li>
+        <li>$\\omega t + \\varphi$: Pha dao động tại thời điểm $t$</li>
+      </ul>
+    `;
+  </script>
+</body>
+</html>
