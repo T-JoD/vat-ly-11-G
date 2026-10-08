@@ -3,26 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hệ Thống Học Tập Trực Tuyến</title>
+  <title>Hệ Thống Học Tập Trực Tuyến - Vật Lí 11</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    .roadmap-section { margin-top: 30px; }
+    .phase-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--primary);
+    }
+    .phase-title { font-size: 1.15rem; font-weight: 700; color: #1a73e8; margin-bottom: 8px; }
+    .session-list { list-style: none; padding-left: 0; margin-top: 10px; }
+    .session-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f3f4;
+      font-size: 0.95rem;
+    }
+    .session-item:last-child { border-bottom: none; }
+    .session-item:hover { background: #f8f9fa; }
+    .hero-box {
+      background: linear-gradient(135deg, #1a73e8, #174ea6);
+      color: white;
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .hero-box h2 { font-size: 1.6rem; margin-bottom: 8px; }
+    .hero-box p { opacity: 0.9; font-size: 1rem; }
+    .action-group { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .btn-white { background: white; color: var(--primary); font-weight: 600; }
+    .btn-white:hover { background: #f1f3f4; }
+  </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Cổng Học Tập & Luyện Đề</h1>
-      <p style="color: var(--text-muted);">Hệ thống lộ trình học cá nhân hóa & kiểm tra theo độ tự tin</p>
+    <header style="border-bottom: none; margin-bottom: 16px;">
+      <h1>Học Tập Cá Nhân Hóa & Đánh Giá Tự Tin</h1>
+      <p style="color: var(--text-muted);">Môn Vật Lí 11 - Chương trình Giáo dục phổ thông 2018</p>
     </header>
 
-    <main id="course-list">
-      <div class="card">
-        <h2>Vật lí 11 (LY11)</h2>
-        <p style="color: var(--text-muted); margin: 8px 0 16px;">Dao động điều hòa, Sóng cơ và Điện trường</p>
-        <div style="display: flex; gap: 10px;">
-          <a href="buoi.html?mon=LY11&buoi=1" class="btn">Học bài & Luyện tập</a>
-          <a href="lam-de.html?mon=LY11&bai=LY11-B00-VAO" class="btn" style="background: #34a853;">Khảo sát đầu vào</a>
-        </div>
+    <div class="hero-box">
+      <h2>Vật lí 11 (Mã: LY11)</h2>
+      <p>Lộ trình phát triển tư duy vật lí, nắm vững bản chất hiện tượng và làm chủ các dạng câu hỏi trắc nghiệm, đúng/sai và trả lời ngắn.</p>
+      <div class="action-group">
+        <a href="lam-de.html?mon=LY11&bai=LY11-B00-VAO" class="btn btn-white" style="font-size: 1rem; padding: 12px 22px;">📝 Làm bài khảo sát đầu vào (Buổi 00)</a>
+        <a href="buoi.html?mon=LY11&buoi=1" class="btn" style="background: #34a853; font-size: 1rem; padding: 12px 22px;">📖 Bắt đầu Buổi 1: Dao động điều hòa</a>
       </div>
-    </main>
+    </div>
+
+    <!-- Lộ trình học khái quát -->
+    <div class="roadmap-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 1.3rem; color: #202124;">🗺️ Lộ Trình Học Khái Quát Toàn Khóa</h3>
+        <span class="badge" style="font-size: 0.85rem;">18 Buổi Chuẩn Hóa</span>
+      </div>
+
+      <!-- Chặng 1 -->
+      <div class="phase-card">
+        <div class="phase-title">Chặng 1: Dao Động Cơ Học (Buổi 01 - 06)</div>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Trọng tâm: Nắm vững bản chất dao động điều hòa, quan hệ pha x-v-a, bảo toàn năng lượng và cộng hưởng cơ.</p>
+        <ul class="session-list">
+          <li class="session-item">
+            <div><b>Buổi 01:</b> Dao động điều hòa: Mô tả & Phương trình li độ</div>
+            <a href="buoi.html?mon=LY11&buoi=1" class="btn" style="padding: 6px 14px; font-size: 0.85rem;">Học bài</a>
+          </li>
+          <li class="session-item">
+            <div><b>Buổi 02:</b> Vận tốc, Gia tốc & Quan hệ pha trong dao động</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Sắp học</span>
+          </li>
+          <li class="session-item">
+            <div><b>Buổi 03:</b> Động năng, Thế năng & Đồ thị năng lượng dao động</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Sắp học</span>
+          </li>
+          <li class="session-item" style="background: #fff8e1;">
+            <div><b>Buổi 04:</b> 🎯 <b>Kiểm tra định kì nhỏ số 1</b> (Phủ Buổi 01 - 03)</div>
+            <span class="badge" style="background: #ffe082; color: #b78103;">Định kì nhỏ</span>
+          </li>
+          <li class="session-item">
+            <div><b>Buổi 05:</b> Các loại dao động & Hiện tượng cộng hưởng</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Sắp học</span>
+          </li>
+          <li class="session-item">
+            <div><b>Buổi 06:</b> Buổi củng cố chuyên đề / Dự phòng học lại</div>
+            <span class="badge" style="background: #e8eaed; color: #3c4043;">Củng cố</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Chặng 2 -->
+      <div class="phase-card" style="border-left-color: #34a853;">
+        <div class="phase-title" style="color: #1e8e3e;">Chặng 2: Sóng Cơ & Sóng Ánh Sáng (Buổi 07 - 12)</div>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Trọng tâm: Bản chất lan truyền sóng, phương trình sóng, sóng dừng và giao thoa sóng.</p>
+        <ul class="session-list">
+          <li class="session-item">
+            <div><b>Buổi 07:</b> Mô tả sóng cơ & Các đại lượng đặc trưng của sóng</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Chặng 2</span>
+          </li>
+          <li class="session-item">
+            <div><b>Buổi 08:</b> Sóng dừng: Điều kiện tạo sóng dừng và vị trí nút - bụng</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Chặng 2</span>
+          </li>
+          <li class="session-item">
+            <div><b>Buổi 09:</b> Giao thoa sóng cơ và sóng ánh sáng (Thí nghiệm Young)</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Chặng 2</span>
+          </li>
+          <li class="session-item" style="background: #fff8e1;">
+            <div><b>Buổi 10:</b> 🎯 <b>Kiểm tra định kì nhỏ số 2</b> (Phủ Buổi 07 - 09)</div>
+            <span class="badge" style="background: #ffe082; color: #b78103;">Định kì nhỏ</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Chặng 3 -->
+      <div class="phase-card" style="border-left-color: #fbbc04;">
+        <div class="phase-title" style="color: #b06000;">Chặng 3: Điện Trường & Dòng Điện Không Đổi (Buổi 13 - 18)</div>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">Trọng tâm: Tương tác tĩnh điện, cường độ điện trường, thế năng điện, định luật Ohm toàn mạch.</p>
+        <ul class="session-list">
+          <li class="session-item">
+            <div><b>Buổi 13 - 16:</b> Lực Coulomb, Điện trường, Điện thế, Tụ điện</div>
+            <span class="badge" style="background: #f1f3f4; color: #5f6368;">Chặng 3</span>
+          </li>
+          <li class="session-item" style="background: #fce8e6;">
+            <div><b>Buổi 18:</b> 🏆 <b>Kiểm tra định kì tổng hợp chuẩn THPT</b> (28 câu / 40 ý)</div>
+            <span class="badge" style="background: #f28b82; color: #a50e0e;">Định kì THPT</span>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </body>
 </html>

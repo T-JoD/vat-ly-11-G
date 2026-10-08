@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Làm Bài Kiểm Tra - Đánh Giá Độ Tự Tin</title>
+  <title>Làm Bài Kiểm Tra - Hệ Thống Đánh Giá Tự Tin</title>
   <link rel="stylesheet" href="css/style.css">
   <!-- KaTeX CSS & JS với Auto-Render -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -27,46 +27,143 @@
       animation: pulse 1s infinite alternate;
     }
     @keyframes pulse { from { opacity: 1; } to { opacity: 0.6; } }
-    .dung-sai-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 12px;
-      background: #ffffff;
+
+    /* Hộp câu hỏi */
+    .quiz-item {
+      margin-bottom: 24px;
+      padding: 20px;
+      border-radius: var(--radius);
+      background: #fafafa;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 8px;
+      position: relative;
     }
-    .dung-sai-content { flex: 1; margin-right: 12px; font-size: 0.98rem; }
-    .dung-sai-actions { display: flex; gap: 8px; align-items: center; }
-    .dung-sai-btn {
-      padding: 6px 14px;
+    .quiz-item.disabled-box {
+      background: #f1f3f4;
+      opacity: 0.85;
+    }
+
+    /* Các nút tự tin */
+    .confidence-group { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .confidence-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 8px 12px;
       border: 1px solid var(--border);
       background: white;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.2s;
     }
-    .dung-sai-btn.active-dung { background: #1e8e3e; color: white; border-color: #1e8e3e; }
-    .dung-sai-btn.active-sai { background: #d93025; color: white; border-color: #d93025; }
-    .stat-card {
+    .confidence-btn:hover { background: #f1f3f4; }
+    .confidence-btn.active-chac-chan { background: #1a73e8; color: white; border-color: #1a73e8; }
+    .confidence-btn.active-kha-chac { background: #0288d1; color: white; border-color: #0288d1; }
+    .confidence-btn.active-khong-chac { background: #7b1fa2; color: white; border-color: #7b1fa2; }
+    .confidence-btn.active-khong-biet {
+      background: #e65100 !important;
+      color: white !important;
+      border-color: #e65100 !important;
+      font-weight: 700;
+      box-shadow: 0 0 0 2px #ffcc80;
+    }
+
+    /* Đúng/Sai cho từng ý */
+    .dung-sai-item {
       background: white;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 14px;
-      text-align: center;
-      flex: 1;
-      min-width: 130px;
+      margin-bottom: 12px;
     }
+    .dung-sai-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .dung-sai-content { flex: 1; min-width: 250px; font-size: 1rem; }
+    .dung-sai-actions { display: flex; gap: 8px; }
+    .dung-sai-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .dung-sai-btn.active-dung { background: #1e8e3e; color: white; border-color: #1e8e3e; }
+    .dung-sai-btn.active-sai { background: #d93025; color: white; border-color: #d93025; }
+
+    /* Nút hủy câu / bỏ chọn */
+    .btn-clear-q {
+      background: none;
+      border: none;
+      color: #d93025;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-decoration: underline;
+      float: right;
+    }
+
+    /* Màn hình loading phủ toàn trang */
+    #loading-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .spinner {
+      width: 54px;
+      height: 54px;
+      border: 5px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 18px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Bảng phân tích kết quả */
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 0.92rem;
+    }
+    .breakdown-table th, .breakdown-table td {
+      border: 1px solid #e0e0e0;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .breakdown-table th { background: #f1f3f4; color: #202124; font-weight: 600; }
+    .breakdown-table tr:nth-child(even) { background: #fafafa; }
   </style>
 </head>
 <body>
+  <!-- Overlay nạp dữ liệu -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <h2 style="margin-bottom: 8px;">Đang nộp bài và chấm điểm...</h2>
+    <p style="opacity: 0.9; max-width: 450px;">Hệ thống đang đối chiếu câu trả lời với ngân hàng đề và tính toán ma trận điểm độ tự tin. Vui lòng không đóng trình duyệt!</p>
+  </div>
+
   <div class="container">
     <header>
       <a href="index.html" style="text-decoration: none; color: var(--primary); font-size: 0.9rem;">← Quay lại trang chủ</a>
       <h1 id="exam-title" style="margin-top: 8px;">Bài kiểm tra năng lực</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Hệ thống chấm 2 phần: Điểm đúng/sai (thang 10) & Điểm độ tự tin (+1/-1.5, ±0.6, ±0.3)</p>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Hệ thống chấm 2 phần: Điểm đúng/sai (thang 10) & Điểm độ tự tin</p>
     </header>
 
     <!-- Hộp nhập mã -->
@@ -94,8 +191,8 @@
 
       <div id="questions-list"></div>
 
-      <div style="margin-top: 24px; text-align: center;">
-        <button class="btn" style="width: 100%; max-width: 300px; padding: 14px; font-size: 1.05rem; background: #1e8e3e;" onclick="submitExam(false)">Nộp bài thi</button>
+      <div style="margin-top: 28px; text-align: center;">
+        <button class="btn" style="width: 100%; max-width: 320px; padding: 14px; font-size: 1.1rem; background: #1e8e3e;" onclick="validateAndSubmit(false)">Nộp bài thi</button>
       </div>
     </div>
 
@@ -105,27 +202,35 @@
       <p style="color: var(--text-muted); font-size: 0.95rem;">Kết quả làm bài đã được ghi nhận tự động vào bảng tính Google Sheets của giáo viên.</p>
       
       <div style="margin: 28px 0; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 16px;">
-        <div class="stat-card" style="background: #e8f0fe; border-color: #d2e3fc;">
-          <div id="res-score-accuracy" style="font-size: 2.4rem; font-weight: 800; color: var(--primary);">0.0</div>
+        <div class="card" style="flex: 1; min-width: 140px; background: #e8f0fe; border-color: #d2e3fc; padding: 16px;">
+          <div id="res-score-accuracy" style="font-size: 2.5rem; font-weight: 800; color: var(--primary);">0.0</div>
           <p style="color: #1967d2; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">Điểm đúng/sai</p>
-          <small id="res-count-accuracy" style="color: var(--text-muted);">Đúng --/-- câu</small>
+          <small id="res-count-accuracy" style="color: var(--text-muted);">Đúng --/-- ý</small>
         </div>
-        <div class="stat-card" style="background: #e6f4ea; border-color: #ceead6;">
-          <div id="res-score-confidence" style="font-size: 2.4rem; font-weight: 800; color: #1e8e3e;">0.0</div>
+        <div class="card" style="flex: 1; min-width: 140px; background: #e6f4ea; border-color: #ceead6; padding: 16px;">
+          <div id="res-score-confidence" style="font-size: 2.5rem; font-weight: 800; color: #1e8e3e;">0.0</div>
           <p style="color: #137333; font-weight: 600; font-size: 0.95rem; margin-top: 4px;">Điểm độ tự tin</p>
           <small id="res-range-confidence" style="color: var(--text-muted);">Thang điểm min - max</small>
         </div>
       </div>
 
-      <!-- Thống kê độ tự tin -->
-      <div style="background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left;">
-        <h4 style="margin-bottom: 12px; color: #333;">📊 Phân tích lựa chọn độ tự tin của bạn:</h4>
-        <ul style="list-style: none; padding-left: 0; font-size: 0.95rem;" id="res-confidence-breakdown">
-          <li style="margin-bottom: 6px;">• <b>Chắc chắn:</b> <span id="cnt-chac-chan">0</span> câu (Đúng +1.0 / Sai -1.5)</li>
-          <li style="margin-bottom: 6px;">• <b>Khá chắc:</b> <span id="cnt-kha-chac">0</span> câu (±0.6)</li>
-          <li style="margin-bottom: 6px;">• <b>Không chắc:</b> <span id="cnt-khong-chac">0</span> câu (±0.3)</li>
-          <li style="margin-bottom: 6px;">• <b>Không biết:</b> <span id="cnt-khong-biet">0</span> câu (0 đ)</li>
-        </ul>
+      <!-- Bảng thống kê chi tiết từng độ tự tin -->
+      <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 18px; margin-bottom: 24px; text-align: left;">
+        <h4 style="margin-bottom: 6px; color: #202124; font-size: 1.05rem;">📊 Bảng phân tích số câu đúng / sai theo từng độ tự tin:</h4>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">Giúp nhận biết kiến thức đã vững, kiến thức còn mơ hồ hoặc sai do bất cẩn.</p>
+        
+        <table class="breakdown-table">
+          <thead>
+            <tr>
+              <th style="text-align: left;">Mức độ tự tin</th>
+              <th>Tổng số câu/ý</th>
+              <th style="color: #1e8e3e;">Số câu ĐÚNG</th>
+              <th style="color: #d93025;">Số câu SAI</th>
+              <th>Quy tắc tính điểm</th>
+            </tr>
+          </thead>
+          <tbody id="breakdown-table-body"></tbody>
+        </table>
       </div>
 
       <div style="display: flex; gap: 12px; justify-content: center;">
@@ -142,9 +247,28 @@
     let apiUrl = "";
     let currentIdLuot = "";
     let examData = [];
-    let userAnswers = {};
+    let userAnswers = {}; // ma_cau -> { tra_loi, do_tu_tin, khong_biet, subItems: {} }
     let timerInterval = null;
     let secondsLeft = 45 * 60;
+
+    // Chuẩn hóa và làm sạch lỗi ký hiệu KaTeX (cdota -> \cdot a, textkg -> \text{kg}...)
+    function sanitizeLatex(str) {
+      if (!str) return "";
+      return str
+        .replace(/\\\\cdot([a-zA-Z0-9])/g, '\\cdot $1')
+        .replace(/\\cdot([a-zA-Z0-9])/g, '\\cdot $1')
+        .replace(/cdot([a-zA-Z])/g, '\\cdot $1')
+        .replace(/\\\\text\{?([a-zA-Z0-9\/]+)\}?/g, '\\text{ $1}')
+        .replace(/\\text\{?([a-zA-Z0-9\/]+)\}?/g, '\\text{ $1}')
+        .replace(/text([a-zA-Z0-9\/]+)/g, '\\text{ $1}')
+        .replace(/\\\\omega/g, '\\omega')
+        .replace(/omega/g, '\\omega')
+        .replace(/\\\\cos/g, '\\cos')
+        .replace(/cos\(/g, '\\cos(')
+        .replace(/\\\\pi/g, '\\pi')
+        .replace(/pi\//g, '\\pi/')
+        .replace(/\\\\/g, '\\');
+    }
 
     function renderMath(element) {
       if (window.renderMathInElement) {
@@ -184,13 +308,13 @@
         const s = secondsLeft % 60;
         timerEl.innerText = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
 
-        if (secondsLeft <= 300) { // Dưới 5 phút cảnh báo đỏ
+        if (secondsLeft <= 300) {
           timerBox.classList.add('timer-warning');
         }
 
         if (secondsLeft <= 0) {
           clearInterval(timerInterval);
-          alert("Đã hết thời gian làm bài! Hệ thống đang tự động nộp bài thi của bạn.");
+          alert("Đã hết thời gian làm bài! Hệ thống tự động nộp bài thi của bạn.");
           submitExam(true);
         }
       }, 1000);
@@ -254,156 +378,352 @@
 
       questions.forEach((q, idx) => {
         const qId = q.ma_cau || q.ma_cau_hoi;
-        userAnswers[qId] = { tra_loi: "", do_tu_tin: "khá chắc", khong_biet: false };
+        const loai = q.loai || (q.dap_an_a ? 'mot_dap_an' : 'dien_dap');
+        const noiDung = sanitizeLatex(q.de || q.noi_dung);
+
         const qDiv = document.createElement('div');
         qDiv.className = 'quiz-item';
-        
-        let answerHtml = "";
-        const loai = q.loai || (q.dap_an_a ? 'mot_dap_an' : 'dien_dap');
-        const noiDung = q.de || q.noi_dung;
+        qDiv.id = `qbox_${qId}`;
 
-        if (loai === 'dien_dap') {
-          answerHtml = `
-            <div style="margin: 12px 0;">
-              <input type="text" placeholder="Nhập đáp án số..." onchange="setAnswer('${qId}', this.value)" style="padding: 10px 14px; width: 220px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
-            </div>
-          `;
-        } else if (loai === 'nhieu_dap_an') {
-          // Nhiều lựa chọn (checkbox)
-          let opts = (q.lua_chon || "").split('|');
-          answerHtml = '<div style="margin: 12px 0;"><small style="color: var(--primary); font-weight: 600;">(Chọn tất cả các phương án đúng):</small>';
-          opts.forEach(opt => {
-            const val = opt.charAt(0);
-            answerHtml += `
-              <label style="display: block; margin: 8px 0; cursor: pointer; padding: 8px 12px; background: white; border: 1px solid var(--border); border-radius: 6px;">
-                <input type="checkbox" name="chk_${qId}" value="${val}" onchange="setMultipleAnswer('${qId}')"> ${opt}
-              </label>
-            `;
-          });
-          answerHtml += '</div>';
-        } else if (loai === 'dung_sai') {
-          // Đúng/Sai 4 ý
+        if (loai === 'dung_sai') {
+          // Xử lý câu đúng/sai với độ tự tin cho từng ý
+          userAnswers[qId] = { loai: 'dung_sai', subItems: {} };
           let subItems = (q.lua_chon || "").split('|');
-          answerHtml = '<div style="margin: 12px 0;"><small style="color: var(--primary); font-weight: 600;">(Chọn Đúng hoặc Sai cho từng ý):</small>';
+          let subHtml = '<div style="margin-top: 14px;">';
+          
           subItems.forEach((sub, subIdx) => {
             const subKey = ['a', 'b', 'c', 'd'][subIdx] || subIdx;
-            answerHtml += `
-              <div class="dung-sai-row">
-                <div class="dung-sai-content"><b>${subKey})</b> ${sub}</div>
-                <div class="dung-sai-actions">
-                  <button type="button" class="dung-sai-btn" onclick="setDungSaiAnswer('${qId}', '${subKey}', 'D', this)">Đúng</button>
-                  <button type="button" class="dung-sai-btn" onclick="setDungSaiAnswer('${qId}', '${subKey}', 'S', this)">Sai</button>
+            const subText = sanitizeLatex(sub);
+            userAnswers[qId].subItems[subKey] = { tra_loi: "", do_tu_tin: "", khong_biet: false };
+
+            subHtml += `
+              <div class="dung-sai-item" id="ds_item_${qId}_${subKey}">
+                <div class="dung-sai-header">
+                  <div class="dung-sai-content"><b>${subKey})</b> ${subText}</div>
+                  <div class="dung-sai-actions" id="ds_actions_${qId}_${subKey}">
+                    <button type="button" class="dung-sai-btn" onclick="setDungSaiSub('${qId}', '${subKey}', 'D', this)">Đúng</button>
+                    <button type="button" class="dung-sai-btn" onclick="setDungSaiSub('${qId}', '${subKey}', 'S', this)">Sai</button>
+                    <button type="button" style="background: none; border: none; color: #999; cursor: pointer; font-size: 0.8rem;" onclick="clearDungSaiSub('${qId}', '${subKey}')">✕ Bỏ</button>
+                  </div>
+                </div>
+                <div style="border-top: 1px dashed #eee; padding-top: 8px;">
+                  <small style="color: var(--text-muted); font-size: 0.8rem;">Độ tự tin cho ý <b>${subKey}</b>:</small>
+                  <div class="confidence-group" style="margin-top: 4px;">
+                    <button type="button" class="confidence-btn" onclick="setDungSaiConfidence('${qId}', '${subKey}', 'chắc chắn', this)">Chắc chắn (+1/-1.5)</button>
+                    <button type="button" class="confidence-btn" onclick="setDungSaiConfidence('${qId}', '${subKey}', 'khá chắc', this)">Khá chắc (±0.6)</button>
+                    <button type="button" class="confidence-btn" onclick="setDungSaiConfidence('${qId}', '${subKey}', 'không chắc', this)">Không chắc (±0.3)</button>
+                    ${choPhepKhongBiet ? `<button type="button" class="confidence-btn" onclick="setDungSaiKhongBiet('${qId}', '${subKey}', this)" style="background: #fff3e0; color: #e65100;">Không biết (0 đ)</button>` : ''}
+                  </div>
                 </div>
               </div>
             `;
           });
-          answerHtml += '</div>';
+          subHtml += '</div>';
+
+          qDiv.innerHTML = `
+            <div style="overflow: hidden;">
+              <span class="badge" style="background: #e8f0fe; color: #1a73e8;">Câu hỏi Đúng / Sai</span>
+              <p style="font-size: 1.05rem; line-height: 1.5; margin-top: 6px;"><b>Câu ${idx + 1}:</b> ${noiDung}</p>
+            </div>
+            ${subHtml}
+          `;
+
         } else {
-          // 1 đáp án (radio)
-          let opts = [];
-          if (q.lua_chon) {
-            opts = q.lua_chon.split('|');
+          // Các loại câu 1 đáp án, nhiều đáp án, điền đáp
+          userAnswers[qId] = { loai: loai, tra_loi: "", do_tu_tin: "", khong_biet: false };
+          let answerHtml = "";
+
+          if (loai === 'dien_dap') {
+            answerHtml = `
+              <div style="margin: 14px 0;" id="input_box_${qId}">
+                <input type="text" id="input_${qId}" placeholder="Nhập đáp án số..." oninput="setSingleAnswer('${qId}', this.value)" style="padding: 10px 14px; width: 220px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
+              </div>
+            `;
+          } else if (loai === 'nhieu_dap_an') {
+            let opts = (q.lua_chon || "").split('|');
+            answerHtml = '<div style="margin: 12px 0;" id="opts_box_' + qId + '"><small style="color: var(--primary); font-weight: 600;">(Chọn tất cả các phương án đúng):</small>';
+            opts.forEach(opt => {
+              const val = opt.charAt(0);
+              const optClean = sanitizeLatex(opt);
+              answerHtml += `
+                <label style="display: block; margin: 8px 0; cursor: pointer; padding: 10px 14px; background: white; border: 1px solid var(--border); border-radius: 6px;">
+                  <input type="checkbox" name="chk_${qId}" value="${val}" onchange="setMultipleAnswer('${qId}')"> ${optClean}
+                </label>
+              `;
+            });
+            answerHtml += '</div>';
           } else {
-            if (q.dap_an_a) opts.push("A. " + q.dap_an_a);
-            if (q.dap_an_b) opts.push("B. " + q.dap_an_b);
-            if (q.dap_an_c) opts.push("C. " + q.dap_an_c);
-            if (q.dap_an_d) opts.push("D. " + q.dap_an_d);
+            // mot_dap_an
+            let opts = (q.lua_chon || "").split('|');
+            answerHtml = '<div style="margin: 12px 0;" id="opts_box_' + qId + '">';
+            opts.forEach(opt => {
+              const val = opt.charAt(0);
+              const optClean = sanitizeLatex(opt);
+              answerHtml += `
+                <label style="display: block; margin-bottom: 8px; cursor: pointer; padding: 10px 14px; background: white; border: 1px solid var(--border); border-radius: 6px;">
+                  <input type="radio" name="opt_${qId}" value="${val}" onchange="setSingleAnswer('${qId}', '${val}')"> ${optClean}
+                </label>
+              `;
+            });
+            answerHtml += '</div>';
           }
 
-          answerHtml = '<div style="margin: 12px 0;">';
-          opts.forEach(opt => {
-            const val = opt.charAt(0);
-            answerHtml += `
-              <label style="display: block; margin-bottom: 8px; cursor: pointer; padding: 8px 12px; background: white; border: 1px solid var(--border); border-radius: 6px;">
-                <input type="radio" name="opt_${qId}" value="${val}" onchange="setAnswer('${qId}', '${val}')"> ${opt}
-              </label>
-            `;
-          });
-          answerHtml += '</div>';
+          qDiv.innerHTML = `
+            <div style="overflow: hidden;">
+              <button type="button" class="btn-clear-q" onclick="clearSingleQuestion('${qId}')">✕ Bỏ chọn câu này</button>
+              <p style="font-size: 1.05rem; line-height: 1.5;"><b>Câu ${idx + 1}:</b> ${noiDung}</p>
+            </div>
+            ${answerHtml}
+            <div style="margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 10px;">
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Mức độ tự tin của bạn với câu này:</p>
+              <div class="confidence-group" id="conf_group_${qId}">
+                <button type="button" class="confidence-btn" onclick="setSingleConfidence('${qId}', 'chắc chắn', this)">Chắc chắn (+1.0 / -1.5)</button>
+                <button type="button" class="confidence-btn" onclick="setSingleConfidence('${qId}', 'khá chắc', this)">Khá chắc (±0.6)</button>
+                <button type="button" class="confidence-btn" onclick="setSingleConfidence('${qId}', 'không chắc', this)">Không chắc (±0.3)</button>
+                ${choPhepKhongBiet ? `<button type="button" class="confidence-btn" onclick="setSingleKhongBiet('${qId}', this)" style="background: #fff3e0; color: #e65100;">Không biết (0 đ)</button>` : ''}
+              </div>
+            </div>
+          `;
         }
 
-        let khongBietBtn = choPhepKhongBiet ? `
-          <button type="button" class="confidence-btn" onclick="setConfidence('${qId}', 'khong_biet', this)" style="background: #fff3e0; border-color: #ffe0b2; color: #e65100;">Không biết (0 đ)</button>
-        ` : '';
-
-        qDiv.innerHTML = `
-          <p style="font-size: 1.05rem; line-height: 1.5;"><b>Câu ${idx + 1}:</b> ${noiDung}</p>
-          ${answerHtml}
-          <div style="margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 10px;">
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Mức độ tự tin của bạn với câu này:</p>
-            <div class="confidence-group">
-              <button type="button" class="confidence-btn" onclick="setConfidence('${qId}', 'chắc chắn', this)">Chắc chắn (+1.0 / -1.5)</button>
-              <button type="button" class="confidence-btn active" onclick="setConfidence('${qId}', 'khá chắc', this)">Khá chắc (±0.6)</button>
-              <button type="button" class="confidence-btn" onclick="setConfidence('${qId}', 'không chắc', this)">Không chắc (±0.3)</button>
-              ${khongBietBtn}
-            </div>
-          </div>
-        `;
         container.appendChild(qDiv);
       });
 
       renderMath(container);
     }
 
-    function setAnswer(maCau, val) {
-      if (!userAnswers[maCau]) userAnswers[maCau] = {};
-      userAnswers[maCau].tra_loi = val;
+    // --- CÁC HÀM XỬ LÝ CHO CÂU ĐƠN / NHIỀU ĐÁP ÁN / ĐIỀN ĐÁP ---
+    function setSingleAnswer(qId, val) {
+      userAnswers[qId].tra_loi = val;
     }
 
-    function setMultipleAnswer(maCau) {
-      const checkedBoxes = document.querySelectorAll(`input[name="chk_${maCau}"]:checked`);
-      const vals = Array.from(checkedBoxes).map(cb => cb.value).sort().join(',');
-      setAnswer(maCau, vals);
+    function setMultipleAnswer(qId) {
+      const checked = document.querySelectorAll(`input[name="chk_${qId}"]:checked`);
+      const vals = Array.from(checked).map(c => c.value).sort().join(',');
+      userAnswers[qId].tra_loi = vals;
     }
 
-    function setDungSaiAnswer(maCau, subKey, choice, btn) {
-      if (!userAnswers[maCau]) userAnswers[maCau] = { subAnswers: {} };
-      if (!userAnswers[maCau].subAnswers) userAnswers[maCau].subAnswers = {};
-      userAnswers[maCau].subAnswers[subKey] = choice;
+    function setSingleConfidence(qId, level, btn) {
+      userAnswers[qId].do_tu_tin = level;
+      userAnswers[qId].khong_biet = false;
 
-      const parent = btn.parentElement;
-      parent.querySelectorAll('.dung-sai-btn').forEach(b => {
-        b.classList.remove('active-dung', 'active-sai');
+      // Mở khóa lựa chọn nếu trước đó bị khóa bởi Không biết
+      enableQuestionInputs(qId);
+
+      const group = btn.parentElement;
+      group.querySelectorAll('.confidence-btn').forEach(b => {
+        b.className = 'confidence-btn';
       });
+      if (level === 'chắc chắn') btn.classList.add('active-chac-chan');
+      else if (level === 'khá chắc') btn.classList.add('active-kha-chac');
+      else if (level === 'không chắc') btn.classList.add('active-khong-chac');
+    }
+
+    function setSingleKhongBiet(qId, btn) {
+      userAnswers[qId].do_tu_tin = "khong_biet";
+      userAnswers[qId].khong_biet = true;
+      userAnswers[qId].tra_loi = ""; // Bỏ toàn bộ lựa chọn trước đó
+
+      // Highlight nút Không biết
+      const group = btn.parentElement;
+      group.querySelectorAll('.confidence-btn').forEach(b => {
+        b.className = 'confidence-btn';
+      });
+      btn.classList.add('active-khong-biet');
+
+      // Khóa và bỏ chọn đáp án
+      disableAndClearQuestionInputs(qId);
+    }
+
+    function clearSingleQuestion(qId) {
+      userAnswers[qId].tra_loi = "";
+      userAnswers[qId].do_tu_tin = "";
+      userAnswers[qId].khong_biet = false;
+
+      enableQuestionInputs(qId);
+      clearInputsOnly(qId);
+
+      // Bỏ active tất cả nút tự tin
+      const group = document.getElementById(`conf_group_${qId}`);
+      if (group) {
+        group.querySelectorAll('.confidence-btn').forEach(b => b.className = 'confidence-btn');
+      }
+    }
+
+    function disableAndClearQuestionInputs(qId) {
+      clearInputsOnly(qId);
+      const box = document.getElementById(`opts_box_${qId}`) || document.getElementById(`input_box_${qId}`);
+      if (box) {
+        box.querySelectorAll('input').forEach(inp => inp.disabled = true);
+        box.style.opacity = '0.5';
+      }
+    }
+
+    function enableQuestionInputs(qId) {
+      const box = document.getElementById(`opts_box_${qId}`) || document.getElementById(`input_box_${qId}`);
+      if (box) {
+        box.querySelectorAll('input').forEach(inp => inp.disabled = false);
+        box.style.opacity = '1';
+      }
+    }
+
+    function clearInputsOnly(qId) {
+      const radios = document.querySelectorAll(`input[name="opt_${qId}"]`);
+      radios.forEach(r => r.checked = false);
+      const chks = document.querySelectorAll(`input[name="chk_${qId}"]`);
+      chks.forEach(c => c.checked = false);
+      const textInp = document.getElementById(`input_${qId}`);
+      if (textInp) textInp.value = "";
+    }
+
+    // --- CÁC HÀM XỬ LÝ CHO CÂU ĐÚNG / SAI ---
+    function setDungSaiSub(qId, subKey, choice, btn) {
+      userAnswers[qId].subItems[subKey].tra_loi = choice;
+      const actions = btn.parentElement;
+      actions.querySelectorAll('.dung-sai-btn').forEach(b => b.className = 'dung-sai-btn');
       if (choice === 'D') btn.classList.add('active-dung');
       else btn.classList.add('active-sai');
-
-      // Ghép chuỗi dạng a:D,b:S,c:D,d:S hoặc D,S,D,S
-      const subs = ['a', 'b', 'c', 'd'].map(k => userAnswers[maCau].subAnswers[k] || "").join(',');
-      userAnswers[maCau].tra_loi = subs;
     }
 
-    function setConfidence(maCau, level, btn) {
-      if (!userAnswers[maCau]) userAnswers[maCau] = {};
-      userAnswers[maCau].do_tu_tin = level;
-      userAnswers[maCau].khong_biet = (level === 'khong_biet');
+    function setDungSaiConfidence(qId, subKey, level, btn) {
+      userAnswers[qId].subItems[subKey].do_tu_tin = level;
+      userAnswers[qId].subItems[subKey].khong_biet = false;
 
-      btn.parentElement.querySelectorAll('.confidence-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      // Mở khóa nếu có
+      enableDungSaiInputs(qId, subKey);
+
+      const group = btn.parentElement;
+      group.querySelectorAll('.confidence-btn').forEach(b => b.className = 'confidence-btn');
+      if (level === 'chắc chắn') btn.classList.add('active-chac-chan');
+      else if (level === 'khá chắc') btn.classList.add('active-kha-chac');
+      else if (level === 'không chắc') btn.classList.add('active-khong-chac');
+    }
+
+    function setDungSaiKhongBiet(qId, subKey, btn) {
+      userAnswers[qId].subItems[subKey].do_tu_tin = "khong_biet";
+      userAnswers[qId].subItems[subKey].khong_biet = true;
+      userAnswers[qId].subItems[subKey].tra_loi = "";
+
+      const group = btn.parentElement;
+      group.querySelectorAll('.confidence-btn').forEach(b => b.className = 'confidence-btn');
+      btn.classList.add('active-khong-biet');
+
+      // Khóa và bỏ chọn Đúng/Sai
+      disableAndClearDungSaiInputs(qId, subKey);
+    }
+
+    function clearDungSaiSub(qId, subKey) {
+      userAnswers[qId].subItems[subKey].tra_loi = "";
+      userAnswers[qId].subItems[subKey].do_tu_tin = "";
+      userAnswers[qId].subItems[subKey].khong_biet = false;
+
+      enableDungSaiInputs(qId, subKey);
+      const itemEl = document.getElementById(`ds_item_${qId}_${subKey}`);
+      if (itemEl) {
+        itemEl.querySelectorAll('.dung-sai-btn').forEach(b => b.className = 'dung-sai-btn');
+        itemEl.querySelectorAll('.confidence-btn').forEach(b => b.className = 'confidence-btn');
+      }
+    }
+
+    function disableAndClearDungSaiInputs(qId, subKey) {
+      const actions = document.getElementById(`ds_actions_${qId}_${subKey}`);
+      if (actions) {
+        actions.querySelectorAll('.dung-sai-btn').forEach(b => {
+          b.className = 'dung-sai-btn';
+          b.disabled = true;
+        });
+        actions.style.opacity = '0.5';
+      }
+    }
+
+    function enableDungSaiInputs(qId, subKey) {
+      const actions = document.getElementById(`ds_actions_${qId}_${subKey}`);
+      if (actions) {
+        actions.querySelectorAll('.dung-sai-btn').forEach(b => b.disabled = false);
+        actions.style.opacity = '1';
+      }
+    }
+
+    // --- KIỂM TRA QUY TẮC BẮT BUỘC TRƯỚC KHI NỘP BÀI ---
+    function validateAndSubmit(isAuto) {
+      if (!isAuto) {
+        // Kiểm tra từng câu
+        for (let i = 0; i < examData.length; i++) {
+          const q = examData[i];
+          const qId = q.ma_cau || q.ma_cau_hoi;
+          const uAns = userAnswers[qId];
+
+          if (uAns.loai === 'dung_sai') {
+            for (let subKey of ['a', 'b', 'c', 'd']) {
+              const sub = uAns.subItems[subKey];
+              if (sub) {
+                // Đã chọn đáp án nhưng chưa chọn độ tự tin
+                if (sub.tra_loi !== "" && !sub.do_tu_tin && !sub.khong_biet) {
+                  alert(`Câu ${i + 1} (ý ${subKey}): Bạn đã chọn Đúng/Sai nhưng chưa chọn mức độ tự tin. Vui lòng chọn độ tự tin hoặc bấm '✕ Bỏ' trước khi nộp!`);
+                  return;
+                }
+                // Đã chọn độ tự tin nhưng chưa chọn đáp án
+                if (sub.do_tu_tin && sub.do_tu_tin !== 'khong_biet' && sub.tra_loi === "") {
+                  alert(`Câu ${i + 1} (ý ${subKey}): Bạn đã chọn mức độ tự tin nhưng chưa chọn Đúng hoặc Sai!`);
+                  return;
+                }
+              }
+            }
+          } else {
+            // Câu đơn/nhiều đáp án/điền đáp
+            if (uAns.tra_loi !== "" && !uAns.do_tu_tin && !uAns.khong_biet) {
+              alert(`Câu ${i + 1}: Bạn đã chọn đáp án nhưng chưa chọn mức độ tự tin. Vui lòng chọn độ tự tin hoặc bấm '✕ Bỏ chọn câu này' trước khi nộp!`);
+              return;
+            }
+            if (uAns.do_tu_tin && uAns.do_tu_tin !== 'khong_biet' && uAns.tra_loi === "") {
+              alert(`Câu ${i + 1}: Bạn đã chọn mức độ tự tin nhưng chưa trả lời câu hỏi!`);
+              return;
+            }
+          }
+        }
+
+        if (!confirm("Bạn có chắc chắn muốn nộp bài thi?")) return;
+      }
+
+      submitExam(isAuto);
     }
 
     async function submitExam(isAuto) {
-      if (!isAuto && !confirm("Bạn có chắc chắn muốn nộp bài thi?")) return;
-
       if (timerInterval) clearInterval(timerInterval);
 
-      // Đếm số lượng theo độ tự tin
-      let cntChacChan = 0, cntKhaChac = 0, cntKhongChac = 0, cntKhongBiet = 0;
-      Object.values(userAnswers).forEach(ans => {
-        if (ans.khong_biet) cntKhongBiet++;
-        else if (ans.do_tu_tin === 'chắc chắn') cntChacChan++;
-        else if (ans.do_tu_tin === 'không chắc') cntKhongChac++;
-        else cntKhaChac++;
-      });
+      // Hiển thị Overlay xoay mượt mà
+      document.getElementById('loading-overlay').style.display = 'flex';
 
-      const payloadAnswers = Object.keys(userAnswers).map(ma_cau => ({
-        ma_cau: ma_cau,
-        ma_cau_hoi: ma_cau,
-        tra_loi: userAnswers[ma_cau].tra_loi,
-        lua_chon: userAnswers[ma_cau].tra_loi,
-        do_tu_tin: userAnswers[ma_cau].do_tu_tin,
-        khong_biet: userAnswers[ma_cau].khong_biet
-      }));
+      // Đóng gói danh sách câu trả lời
+      const payloadAnswers = [];
+
+      Object.keys(userAnswers).forEach(qId => {
+        const item = userAnswers[qId];
+        if (item.loai === 'dung_sai') {
+          // Mỗi ý nhỏ là 1 đơn vị chấm độc lập
+          ['a', 'b', 'c', 'd'].forEach(subKey => {
+            const sub = item.subItems[subKey];
+            payloadAnswers.push({
+              ma_cau: `${qId}_${subKey}`,
+              ma_cau_goc: qId,
+              sub_key: subKey,
+              loai: 'dung_sai_y',
+              tra_loi: sub ? sub.tra_loi : "",
+              do_tu_tin: sub ? sub.do_tu_tin : "",
+              khong_biet: sub ? sub.khong_biet : false
+            });
+          });
+        } else {
+          payloadAnswers.push({
+            ma_cau: qId,
+            loai: item.loai,
+            tra_loi: item.tra_loi,
+            lua_chon: item.tra_loi,
+            do_tu_tin: item.do_tu_tin,
+            khong_biet: item.khong_biet
+          });
+        }
+      });
 
       try {
         const res = await fetch(apiUrl, {
@@ -417,6 +737,9 @@
         });
         const result = await res.json();
 
+        // Ẩn Overlay
+        document.getElementById('loading-overlay').style.display = 'none';
+
         if (result.status !== 'success') {
           alert(result.message || "Lỗi khi nộp bài!");
           return;
@@ -427,27 +750,95 @@
 
         const diemDungSai = (result.diem_dung_sai !== undefined) ? result.diem_dung_sai : ((result.diem_so !== undefined) ? result.diem_so : 0);
         const diemTuTin = (result.diem_tu_tin !== undefined) ? result.diem_tu_tin : 0;
-        const soY = (result.so_y !== undefined) ? result.so_y : ((result.tong_cau !== undefined) ? result.tong_cau : payloadAnswers.length);
+        const soY = (result.so_y !== undefined) ? result.so_y : payloadAnswers.length;
         const soYDung = (result.so_y_dung !== undefined) ? result.so_y_dung : ((result.so_cau_dung !== undefined) ? result.so_cau_dung : 0);
 
         document.getElementById('res-score-accuracy').innerText = Number(diemDungSai || 0).toFixed(2);
-        document.getElementById('res-count-accuracy').innerText = `Đúng ${soYDung} / ${soY} câu`;
+        document.getElementById('res-count-accuracy').innerText = `Đúng ${soYDung} / ${soY} ý`;
 
         document.getElementById('res-score-confidence').innerText = (diemTuTin > 0 ? "+" : "") + Number(diemTuTin || 0).toFixed(1);
         if (result.tu_tin_min !== undefined && result.tu_tin_max !== undefined) {
           document.getElementById('res-range-confidence').innerText = `Khoảng điểm: [${result.tu_tin_min} đến +${result.tu_tin_max}]`;
-        } else {
-          document.getElementById('res-range-confidence').innerText = `Đánh giá theo độ tự tin`;
         }
 
-        document.getElementById('cnt-chac-chan').innerText = cntChacChan;
-        document.getElementById('cnt-kha-chac').innerText = cntKhaChac;
-        document.getElementById('cnt-khong-chac').innerText = cntKhongChac;
-        document.getElementById('cnt-khong-biet').innerText = cntKhongBiet;
+        // Tạo bảng thống kê chi tiết số câu đúng và sai theo từng mức tự tin
+        renderConfidenceBreakdown(result, payloadAnswers);
 
       } catch (e) {
+        document.getElementById('loading-overlay').style.display = 'none';
         alert("Lỗi nộp bài: " + e.message);
       }
+    }
+
+    function renderConfidenceBreakdown(result, payloadAnswers) {
+      const stats = {
+        'chắc chắn': { tong: 0, dung: 0, sai: 0, rule: '+1.0 / -1.5 đ' },
+        'khá chắc': { tong: 0, dung: 0, sai: 0, rule: '±0.6 đ' },
+        'không chắc': { tong: 0, dung: 0, sai: 0, rule: '±0.3 đ' },
+        'khong_biet': { tong: 0, dung: 0, sai: 0, rule: '0 đ' },
+        'bo_qua': { tong: 0, dung: 0, sai: 0, rule: '0 đ (Chưa làm)' }
+      };
+
+      if (result.chi_tiet_tu_tin) {
+        // Nếu backend đã tính sẵn
+        const ct = result.chi_tiet_tu_tin;
+        if (ct.chac_chan) { stats['chắc chắn'].tong = ct.chac_chan.tong; stats['chắc chắn'].dung = ct.chac_chan.dung; stats['chắc chắn'].sai = ct.chac_chan.sai; }
+        if (ct.kha_chac) { stats['khá chắc'].tong = ct.kha_chac.tong; stats['khá chắc'].dung = ct.kha_chac.dung; stats['khá chắc'].sai = ct.kha_chac.sai; }
+        if (ct.khong_chac) { stats['không chắc'].tong = ct.khong_chac.tong; stats['không chắc'].dung = ct.khong_chac.dung; stats['không chắc'].sai = ct.khong_chac.sai; }
+        if (ct.khong_biet) { stats['khong_biet'].tong = ct.khong_biet.tong; }
+        if (ct.bo_qua) { stats['bo_qua'].tong = ct.bo_qua.tong; }
+      } else {
+        // Thống kê fallback từ client
+        payloadAnswers.forEach(ans => {
+          if (ans.khong_biet) {
+            stats['khong_biet'].tong++;
+          } else if (!ans.tra_loi && !ans.do_tu_tin) {
+            stats['bo_qua'].tong++;
+          } else if (ans.do_tu_tin) {
+            const dt = ans.do_tu_tin.toLowerCase();
+            if (stats[dt]) stats[dt].tong++;
+          }
+        });
+      }
+
+      const tbody = document.getElementById('breakdown-table-body');
+      tbody.innerHTML = `
+        <tr>
+          <td style="text-align: left; font-weight: 600; color: #1a73e8;">🔵 Chắc chắn</td>
+          <td><b>${stats['chắc chắn'].tong}</b></td>
+          <td style="color: #1e8e3e; font-weight: 600;">${stats['chắc chắn'].dung}</td>
+          <td style="color: #d93025; font-weight: 600;">${stats['chắc chắn'].sai}</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">Đúng +1.0 / Sai -1.5</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; font-weight: 600; color: #0288d1;">🔷 Khá chắc</td>
+          <td><b>${stats['khá chắc'].tong}</b></td>
+          <td style="color: #1e8e3e; font-weight: 600;">${stats['khá chắc'].dung}</td>
+          <td style="color: #d93025; font-weight: 600;">${stats['khá chắc'].sai}</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">Đúng +0.6 / Sai -0.6</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; font-weight: 600; color: #7b1fa2;">🟣 Không chắc</td>
+          <td><b>${stats['không chắc'].tong}</b></td>
+          <td style="color: #1e8e3e; font-weight: 600;">${stats['không chắc'].dung}</td>
+          <td style="color: #d93025; font-weight: 600;">${stats['không chắc'].sai}</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">Đúng +0.3 / Sai -0.3</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; font-weight: 600; color: #e65100;">🟠 Không biết</td>
+          <td><b>${stats['khong_biet'].tong}</b></td>
+          <td>-</td>
+          <td>-</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">0 điểm (Xếp Chưa biết)</td>
+        </tr>
+        <tr>
+          <td style="text-align: left; font-weight: 600; color: #5f6368;">⚪ Bỏ qua (Chưa làm)</td>
+          <td><b>${stats['bo_qua'].tong}</b></td>
+          <td>-</td>
+          <td>-</td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">0 điểm (Không phạt)</td>
+        </tr>
+      `;
     }
   </script>
 </body>
