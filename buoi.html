@@ -3,49 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nội Dung Buổi Học</title>
+  <title>Nội Dung Buổi Học - Học Tập Trực Tuyến</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- KaTeX CSS & JS với Auto-Render -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+  <!-- Marked.js cho Markdown -->
   <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+  <style>
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+    .tab-btn {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .markdown-body img { max-width: 100%; height: auto; display: block; margin: 16px auto; border-radius: 6px; box-shadow: var(--shadow); }
+    .markdown-body em { display: block; text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; }
+    .markdown-body blockquote {
+      margin: 16px 0;
+      padding: 12px 16px;
+      background: #f1f3f4;
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+    }
+    .markdown-body details {
+      margin: 12px 0;
+      padding: 12px;
+      background: #e8f0fe;
+      border-radius: 6px;
+      border: 1px solid #d2e3fc;
+    }
+    .markdown-body details summary { font-weight: 600; color: #1967d2; cursor: pointer; }
+    .markdown-body h2 { margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 1px solid #eee; color: #1a73e8; font-size: 1.35rem; }
+    .markdown-body h3 { margin: 18px 0 8px; font-size: 1.15rem; color: #333; }
+    .markdown-body ul, .markdown-body ol { margin-left: 24px; margin-bottom: 12px; }
+    .markdown-body li { margin-bottom: 6px; }
+  </style>
 </head>
 <body>
   <div class="container">
     <header>
       <a href="index.html" style="text-decoration: none; color: var(--primary); font-size: 0.9rem;">← Quay lại danh sách môn</a>
-      <h1 id="session-title" style="margin-top: 8px;">Buổi 1: Dao động điều hòa</h1>
+      <h1 id="session-title" style="margin-top: 8px;">Đang tải nội dung buổi học...</h1>
       <div id="session-tags" style="margin-top: 6px;"></div>
     </header>
 
-    <div class="card" id="theory-content">
-      <h2>Lý thuyết trọng tâm</h2>
-      <div id="content-body" style="margin-top: 12px;">
-        <p>Đang tải nội dung bài học...</p>
-      </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('theory')">📖 Lý Thuyết Trọng Tâm</button>
+      <button class="tab-btn" onclick="switchTab('practice')">✏️ Bài Tập Tự Luyện</button>
     </div>
 
-    <div style="text-align: center; margin: 24px 0;">
-      <a id="quiz-btn" href="lam-de.html?mon=LY11&bai=LY11-B01-CUOI" class="btn" style="font-size: 1.1rem; padding: 12px 24px;">Làm bài kiểm tra cuối buổi</a>
+    <!-- Khung lý thuyết -->
+    <div class="card markdown-body" id="tab-theory">
+      <div id="theory-content">Đang tải lý thuyết...</div>
+    </div>
+
+    <!-- Khung bài tập -->
+    <div class="card markdown-body" id="tab-practice" style="display: none;">
+      <div id="practice-content">Đang tải bài tập...</div>
+    </div>
+
+    <!-- Nút kiểm tra cuối buổi -->
+    <div style="text-align: center; margin: 30px 0;">
+      <a id="quiz-btn" href="#" class="btn" style="font-size: 1.1rem; padding: 14px 28px; background: #1e8e3e;">Làm bài kiểm tra cuối buổi</a>
     </div>
   </div>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const mon = params.get('mon') || 'LY11';
-    const buoi = params.get('buoi') || '1';
+    const maMon = params.get('mon') || 'LY11';
+    let buoiNum = parseInt(params.get('buoi') || '1', 10);
+    let buoiStr = buoiNum < 10 ? '0' + buoiNum : '' + buoiNum;
 
-    // Mock fetch for demonstration
-    document.getElementById('session-title').innerText = `Môn ${mon} - Buổi ${buoi}: Dao động điều hòa`;
-    document.getElementById('session-tags').innerHTML = `<span class="badge">LY11.DD.01</span> <span class="badge">LY11.DD.02</span>`;
-    document.getElementById('content-body').innerHTML = `
-      <p><b>1. Định nghĩa dao động:</b> Chuyển động lặp đi lặp lại quanh một vị trí cân bằng gọi là dao động cơ học.</p>
-      <p style="margin-top: 8px;"><b>2. Phương trình dao động điều hòa:</b> $x = A \\cos(\\omega t + \\varphi)$</p>
-      <ul>
-        <li>$x$: Li độ (cm hoặc m)</li>
-        <li>$A$: Biên độ dao động ($A > 0$)</li>
-        <li>$\\omega$: Tần số góc (rad/s)</li>
-        <li>$\\omega t + \\varphi$: Pha dao động tại thời điểm $t$</li>
-      </ul>
-    `;
+    document.getElementById('quiz-btn').href = `lam-de.html?mon=${maMon}&bai=${maMon}-B${buoiStr}-CUOI`;
+
+    function renderMath(element) {
+      if (window.renderMathInElement) {
+        renderMathInElement(element, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (tab === 'theory') {
+        document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+        document.getElementById('tab-theory').style.display = 'block';
+        document.getElementById('tab-practice').style.display = 'none';
+      } else {
+        document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+        document.getElementById('tab-theory').style.display = 'none';
+        document.getElementById('tab-practice').style.display = 'block';
+      }
+    }
+
+    async function loadSession() {
+      // 1. Tải danh sách buổi để lấy tiêu đề và thẻ
+      try {
+        const resBuoi = await fetch(`mon/${maMon}/data/buoi.json`);
+        const buoiList = await resBuoi.json();
+        const currentBuoi = buoiList.find(b => b.buoi === buoiNum);
+        if (currentBuoi) {
+          document.getElementById('session-title').innerText = `Buổi ${buoiNum}: ${currentBuoi.tieu_de}`;
+          const tagsHtml = (currentBuoi.the || []).map(t => `<span class="badge">${t}</span>`).join(' ');
+          document.getElementById('session-tags').innerHTML = tagsHtml;
+        }
+      } catch (e) {
+        document.getElementById('session-title').innerText = `Môn ${maMon} - Buổi ${buoiNum}`;
+      }
+
+      // 2. Tải Lý thuyết Markdown
+      try {
+        const resTheory = await fetch(`mon/${maMon}/buoi/${buoiStr}/ly-thuyet.md`);
+        if (resTheory.ok) {
+          let text = await resTheory.text();
+          // Bỏ phần front matter --- ... ---
+          text = text.replace(/^---[\s\S]*?---\s*/, '');
+          const html = marked.parse(text);
+          const tEl = document.getElementById('theory-content');
+          tEl.innerHTML = html;
+          // Sửa đường dẫn hình tương đối cho đúng thư mục buổi
+          tEl.querySelectorAll('img').forEach(img => {
+            const src = img.getAttribute('src');
+            if (src && !src.startsWith('http') && !src.startsWith('/')) {
+              img.src = `mon/${maMon}/buoi/${buoiStr}/${src}`;
+            }
+          });
+          renderMath(tEl);
+        } else {
+          document.getElementById('theory-content').innerHTML = '<p>Chưa có file lý thuyết cho buổi này.</p>';
+        }
+      } catch (e) {
+        document.getElementById('theory-content').innerHTML = '<p>Không thể tải lý thuyết: ' + e.message + '</p>';
+      }
+
+      // 3. Tải Bài tập tự luyện Markdown
+      try {
+        const resPractice = await fetch(`mon/${maMon}/buoi/${buoiStr}/bai-tap.md`);
+        if (resPractice.ok) {
+          let text = await resPractice.text();
+          text = text.replace(/^---[\s\S]*?---\s*/, '');
+          const html = marked.parse(text);
+          const pEl = document.getElementById('practice-content');
+          pEl.innerHTML = html;
+          renderMath(pEl);
+        } else {
+          document.getElementById('practice-content').innerHTML = '<p>Chưa có file bài tập tự luyện cho buổi này.</p>';
+        }
+      } catch (e) {
+        document.getElementById('practice-content').innerHTML = '<p>Không thể tải bài tập tự luyện.</p>';
+      }
+    }
+
+    loadSession();
   </script>
 </body>
 </html>

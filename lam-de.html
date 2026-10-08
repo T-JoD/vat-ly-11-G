@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Làm Bài Kiểm Tra - Hệ Thống Đánh Giá Tự Tin</title>
   <link rel="stylesheet" href="css/style.css">
+  <!-- KaTeX CSS & JS với Auto-Render -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -18,9 +20,9 @@
 
     <!-- Hộp nhập mã -->
     <div class="card" id="auth-box">
-      <h3>Xác thực thông tin học sinh</h3>
-      <p style="color: var(--text-muted); margin: 8px 0 16px; font-size: 0.9rem;">Vui lòng nhập mã định danh học sinh của bạn để nhận đề thi:</p>
-      <input type="text" id="student-code" placeholder="Ví dụ: 7K3QX9MA hoặc GV-0001" style="padding: 12px; width: 100%; max-width: 320px; border: 1px solid var(--border); border-radius: var(--radius); text-transform: uppercase; font-size: 1rem; font-weight: 600;">
+      <h3>Xác thực thông tin thí sinh</h3>
+      <p style="color: var(--text-muted); margin: 8px 0 16px; font-size: 0.9rem;">Vui lòng nhập mã định danh do giáo viên cấp để nhận đề thi:</p>
+      <input type="text" id="student-code" placeholder="Nhập mã định danh của bạn..." style="padding: 12px; width: 100%; max-width: 320px; border: 1px solid var(--border); border-radius: var(--radius); text-transform: uppercase; font-size: 1rem; font-weight: 600;">
       <div style="margin-top: 14px;">
         <button class="btn" onclick="startExam()">Bắt đầu làm bài</button>
       </div>
@@ -29,18 +31,18 @@
 
     <!-- Khung làm bài thi -->
     <div class="card" id="quiz-container" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 8px;">
         <div>
           <span class="badge" id="student-badge">Học sinh</span>
           <span class="badge" style="background: #fce8e6; color: #c5221f;" id="exam-code-badge"></span>
         </div>
-        <span id="timer" style="font-weight: 700; color: #ea4335; font-size: 1.1rem;">Thời gian: --:--</span>
+        <span id="timer" style="font-weight: 700; color: #ea4335; font-size: 1.1rem;">Thời gian: 45:00</span>
       </div>
 
       <div id="questions-list"></div>
 
       <div style="margin-top: 24px; text-align: center;">
-        <button class="btn" style="width: 100%; max-width: 300px; padding: 14px; font-size: 1.05rem;" onclick="submitExam()">Nộp bài thi</button>
+        <button class="btn" style="width: 100%; max-width: 300px; padding: 14px; font-size: 1.05rem; background: #1e8e3e;" onclick="submitExam()">Nộp bài thi</button>
       </div>
     </div>
 
@@ -73,7 +75,19 @@
     let apiUrl = "";
     let currentIdLuot = "";
     let examData = [];
-    let userAnswers = {}; // ma_cau -> { tra_loi, do_tu_tin, khong_biet }
+    let userAnswers = {};
+
+    function renderMath(element) {
+      if (window.renderMathInElement) {
+        renderMathInElement(element, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
 
     // Tải cấu hình API từ data/mon.json
     fetch('data/mon.json')
@@ -85,6 +99,9 @@
       });
 
     document.getElementById('exam-code-badge').innerText = maBai;
+    if (maBai.includes('B00')) {
+      document.getElementById('exam-title').innerText = "Khảo Sát Năng Lực Đầu Vào";
+    }
 
     async function startExam() {
       const codeInput = document.getElementById('student-code');
@@ -98,18 +115,23 @@
         return;
       }
       if (!apiUrl) {
-        errBox.innerText = "Đang tải cấu hình kết nối, vui lòng thử lại sau 2 giây...";
+        errBox.innerText = "Đang kết nối hệ thống, vui lòng thử lại sau 2 giây...";
         errBox.style.display = 'block';
         return;
       }
 
-      errBox.innerText = "Đang kiểm tra mã và nhận đề thi...";
+      errBox.innerText = "Đang xác thực mã và tải đề thi...";
       errBox.style.display = 'block';
 
       try {
         const res = await fetch(apiUrl, {
           method: 'POST',
-          body: JSON.stringify({ action: 'bat_dau', ma_hs: maHS, ma_bai: maBai })
+          body: JSON.stringify({
+            action: 'bat_dau',
+            ma_hs: maHS,
+            ma_bai: maBai,
+            ma_kiem_tra: maBai
+          })
         });
         const data = await res.json();
 
@@ -118,7 +140,7 @@
           return;
         }
 
-        currentIdLuot = data.id_luot;
+        currentIdLuot = data.id_luot || data.ma_luot_lam;
         examData = data.danh_sach_cau_hoi || [];
         document.getElementById('student-badge').innerText = `Mã: ${maHS}`;
 
@@ -136,50 +158,66 @@
       container.innerHTML = "";
 
       questions.forEach((q, idx) => {
-        userAnswers[q.ma_cau] = { tra_loi: "", do_tu_tin: "khá chắc", khong_biet: false };
+        const qId = q.ma_cau || q.ma_cau_hoi;
+        userAnswers[qId] = { tra_loi: "", do_tu_tin: "khá chắc", khong_biet: false };
         const qDiv = document.createElement('div');
         qDiv.className = 'quiz-item';
         
         let answerHtml = "";
-        if (q.loai === 'dien_dap') {
+        const loai = q.loai || (q.dap_an_a ? 'mot_dap_an' : 'dien_dap');
+        const noiDung = q.de || q.noi_dung;
+
+        if (loai === 'dien_dap') {
           answerHtml = `
             <div style="margin: 12px 0;">
-              <input type="text" placeholder="Nhập đáp án số..." onchange="setAnswer('${q.ma_cau}', this.value)" style="padding: 8px 12px; width: 220px; border: 1px solid var(--border); border-radius: 4px;">
+              <input type="text" placeholder="Nhập đáp án số..." onchange="setAnswer('${qId}', this.value)" style="padding: 10px 14px; width: 220px; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;">
             </div>
           `;
         } else {
-          const opts = (q.lua_chon || "").split('|');
-          answerHtml = '<div style="margin: 10px 0;">';
+          // Các lựa chọn
+          let opts = [];
+          if (q.lua_chon) {
+            opts = q.lua_chon.split('|');
+          } else {
+            if (q.dap_an_a) opts.push("A. " + q.dap_an_a);
+            if (q.dap_an_b) opts.push("B. " + q.dap_an_b);
+            if (q.dap_an_c) opts.push("C. " + q.dap_an_c);
+            if (q.dap_an_d) opts.push("D. " + q.dap_an_d);
+          }
+
+          answerHtml = '<div style="margin: 12px 0;">';
           opts.forEach(opt => {
             const val = opt.charAt(0);
             answerHtml += `
-              <label style="display: block; margin-bottom: 8px; cursor: pointer;">
-                <input type="radio" name="opt_${q.ma_cau}" value="${val}" onchange="setAnswer('${q.ma_cau}', '${val}')"> ${opt}
+              <label style="display: block; margin-bottom: 10px; cursor: pointer; padding: 8px 12px; background: white; border: 1px solid var(--border); border-radius: 6px;">
+                <input type="radio" name="opt_${qId}" value="${val}" onchange="setAnswer('${qId}', '${val}')"> ${opt}
               </label>
             `;
           });
           answerHtml += '</div>';
         }
 
-        let khongBietHtml = choPhepKhongBiet ? `
-          <button type="button" class="confidence-btn" onclick="setConfidence('${q.ma_cau}', 'khong_biet', this)" style="background: #fff3e0; border-color: #ffe0b2; color: #e65100;">Không biết (0 đ)</button>
+        let khongBietBtn = choPhepKhongBiet ? `
+          <button type="button" class="confidence-btn" onclick="setConfidence('${qId}', 'khong_biet', this)" style="background: #fff3e0; border-color: #ffe0b2; color: #e65100;">Không biết (0 đ)</button>
         ` : '';
 
         qDiv.innerHTML = `
-          <p style="font-size: 1.05rem;"><b>Câu ${idx + 1}:</b> ${q.de}</p>
+          <p style="font-size: 1.05rem; line-height: 1.5;"><b>Câu ${idx + 1}:</b> ${noiDung}</p>
           ${answerHtml}
           <div style="margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 10px;">
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Mức độ tự tin của bạn với câu này:</p>
             <div class="confidence-group">
-              <button type="button" class="confidence-btn" onclick="setConfidence('${q.ma_cau}', 'chắc chắn', this)">Chắc chắn (+1.0 / -1.5)</button>
-              <button type="button" class="confidence-btn active" onclick="setConfidence('${q.ma_cau}', 'khá chắc', this)">Khá chắc (±0.6)</button>
-              <button type="button" class="confidence-btn" onclick="setConfidence('${q.ma_cau}', 'không chắc', this)">Không chắc (±0.3)</button>
-              ${khongBietHtml}
+              <button type="button" class="confidence-btn" onclick="setConfidence('${qId}', 'chắc chắn', this)">Chắc chắn (+1.0 / -1.5)</button>
+              <button type="button" class="confidence-btn active" onclick="setConfidence('${qId}', 'khá chắc', this)">Khá chắc (±0.6)</button>
+              <button type="button" class="confidence-btn" onclick="setConfidence('${qId}', 'không chắc', this)">Không chắc (±0.3)</button>
+              ${khongBietBtn}
             </div>
           </div>
         `;
         container.appendChild(qDiv);
       });
+
+      renderMath(container);
     }
 
     function setAnswer(maCau, val) {
@@ -201,7 +239,9 @@
 
       const payloadAnswers = Object.keys(userAnswers).map(ma_cau => ({
         ma_cau: ma_cau,
+        ma_cau_hoi: ma_cau,
         tra_loi: userAnswers[ma_cau].tra_loi,
+        lua_chon: userAnswers[ma_cau].tra_loi,
         do_tu_tin: userAnswers[ma_cau].do_tu_tin,
         khong_biet: userAnswers[ma_cau].khong_biet
       }));
@@ -212,6 +252,7 @@
           body: JSON.stringify({
             action: 'nop',
             id_luot: currentIdLuot,
+            ma_luot_lam: currentIdLuot,
             dap_an_hs: payloadAnswers
           })
         });
@@ -225,11 +266,21 @@
         document.getElementById('quiz-container').style.display = 'none';
         document.getElementById('result-box').style.display = 'block';
 
-        document.getElementById('res-score-accuracy').innerText = result.diem_dung_sai.toFixed(2);
-        document.getElementById('res-count-accuracy').innerText = `Đúng ${result.so_y_dung} / ${result.so_y} ý`;
+        // Lấy điểm an toàn không bao giờ bị lỗi toFixed
+        const diemDungSai = (result.diem_dung_sai !== undefined) ? result.diem_dung_sai : ((result.diem_so !== undefined) ? result.diem_so : 0);
+        const diemTuTin = (result.diem_tu_tin !== undefined) ? result.diem_tu_tin : 0;
+        const soY = (result.so_y !== undefined) ? result.so_y : ((result.tong_cau !== undefined) ? result.tong_cau : payloadAnswers.length);
+        const soYDung = (result.so_y_dung !== undefined) ? result.so_y_dung : ((result.so_cau_dung !== undefined) ? result.so_cau_dung : 0);
 
-        document.getElementById('res-score-confidence').innerText = (result.diem_tu_tin > 0 ? "+" : "") + result.diem_tu_tin.toFixed(1);
-        document.getElementById('res-range-confidence').innerText = `Khoảng điểm: [${result.tu_tin_min} đến +${result.tu_tin_max}]`;
+        document.getElementById('res-score-accuracy').innerText = Number(diemDungSai || 0).toFixed(2);
+        document.getElementById('res-count-accuracy').innerText = `Đúng ${soYDung} / ${soY} câu`;
+
+        document.getElementById('res-score-confidence').innerText = (diemTuTin > 0 ? "+" : "") + Number(diemTuTin || 0).toFixed(1);
+        if (result.tu_tin_min !== undefined && result.tu_tin_max !== undefined) {
+          document.getElementById('res-range-confidence').innerText = `Khoảng điểm: [${result.tu_tin_min} đến +${result.tu_tin_max}]`;
+        } else {
+          document.getElementById('res-range-confidence').innerText = `Đánh giá theo độ tự tin`;
+        }
 
       } catch (e) {
         alert("Lỗi nộp bài: " + e.message);
